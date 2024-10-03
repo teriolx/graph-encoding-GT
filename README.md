@@ -48,4 +48,5 @@ For example, replicate the best result for ZINC GPS+Spasm by running:
 python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 0
 python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 14
 python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 48
+python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 96
 ```
