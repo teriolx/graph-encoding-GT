@@ -42,7 +42,7 @@ To run an experiment, set up a `configuration.yaml` file containing the model hy
 python GraphGPS/main.py --cfg "/path_to/configuration.yaml" --repeat 1 wandb.use True
 ```
 
-For example, replicate the best result from table 5.4 (ZINC GPS+Spm) by running:
+For example, replicate the best result for ZINC GPS+Spasm by running:
 
 ```bash
 python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 0
