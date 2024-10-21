@@ -24,7 +24,7 @@ posenc_RWSE:
   kernel:
     times_func: range(1,21)
   model: mlp_flat
-  dim_pe: 64
+  dim_pe: 63
   raw_norm_type: BatchNorm
   layers: 2
   norm: "batch_norm"
