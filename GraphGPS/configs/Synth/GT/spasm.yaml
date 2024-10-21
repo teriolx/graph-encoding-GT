@@ -4,19 +4,19 @@ metric_agg: argmin
 seed: 0
 wandb:
   use: True
-  project: SynthSR_SA_initial
-  group: All5
-  entity: linusbao
+  project: Synth-SA-fracdom
+  group: Spasm
+  entity: MoSE-experiments
 dataset:
-  format: EmJ-Synth-All5
-  name: SpecRad
+  format: EmJ-Synth-Spasm10
+  name: FracDom
   task: graph
   task_type: regression
   transductive: False
   follow_edge_batch: True #set to true when processing edge features in parallel
   node_encoder: True
   node_encoder_name: MLPNodeEnc
-  node_encoder_init_dim: 30
+  node_encoder_init_dim: 43
   node_encoder_hid_dim: 64
   node_encoder_depths: 2
 train:
@@ -24,6 +24,7 @@ train:
   batch_size: 128
   eval_period: 1
   ckpt_period: 100
+  pred_logger: True
 model:
   type: GPSModel
   loss_fun: l1
@@ -51,8 +52,8 @@ gnn:
 optim:
   clip_grad_norm: True
   optimizer: adamW
-  weight_decay: 1e-5
-  base_lr: 0.001
+  weight_decay: 1e-3
+  base_lr: 0.0001
   max_epoch: 1200
   scheduler: cosine_with_warmup
   num_warmup_epochs: 30
