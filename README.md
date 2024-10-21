@@ -15,8 +15,11 @@ pip install torch_geometric==2.5.3
 
 pip install ogb easydict pyyaml neptune wandb yacs
 
-pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+cu118.html
+pip install opt_einsum
 
+pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-2.2.1+cu118.html
+
+pip install tensorboardX
 pip install performer-pytorch
 pip install torchmetrics
 pip install numpy==1.26.4
@@ -36,7 +39,7 @@ To set up the data necessary for Hom experiments on QM9, unzip the file `hombasi
 To set up our synthetic (random graph) dataset, run the script `hombasis-gt/synth/save_synth_dataset.py` (this will save the homomorphism count enhanced datasets to `datasets/SYNTH-All5/processed` and `datasets/SYNTH-Spasm/processed`). 
 
 ## Running Experiments
-To run an experiment, set up a `configuration.yaml` file containing the model hyperparameters and experimental setup such as those given in the `GraphGPS/configs/HomGRL/` directory. Then, run:
+To run an experiment, set up a `configuration.yaml` file containing the model hyperparameters and experimental setup such as those given in the `GraphGPS/configs/` directory. Then, run:
 
 ```bash
 python GraphGPS/main.py --cfg "/path_to/configuration.yaml" --repeat 1 wandb.use True
@@ -45,10 +48,10 @@ python GraphGPS/main.py --cfg "/path_to/configuration.yaml" --repeat 1 wandb.use
 For example, replicate the best result for ZINC GPS+Spasm by running:
 
 ```bash
-python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 0
-python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 14
-python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 48
-python GraphGPS/main.py --cfg "./GraphGPS/configs/HomGRL/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 96
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 0
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 14
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 48
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 96
 ```
 
 To run experiments with GRIT, use the `GRIT/main.py` script instead of `GraphGPS/main.py`, and use config files given in `GRIT/configs/HomBias/`.

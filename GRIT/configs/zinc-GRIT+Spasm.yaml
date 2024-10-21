@@ -6,11 +6,10 @@ accelerator: "cuda:0"
 seed: 0
 wandb:
   use: True
-  use_rel_enc: False
-  project: zinc-GRIT
-  group: Spasm-RWpair_GS
-  entity: subgraph-hombasis
-  tags: ['small']
+  project: Zinc-GRIT
+  group: Spasm
+  entity: MoSE-experiments
+  tags: ['SotA']
 dataset:
   format: PyG-ZINC-Spasm
   name: subset
@@ -26,9 +25,7 @@ dataset:
   edge_encoder_num_types: 4
   edge_encoder_bn: False
 posenc_RRWP:
-  enable: True
-  use_node_enc: False
-  use_rel_enc: True
+  enable: False
   ksteps: 21
   add_identity: True
   add_node_attr: False
@@ -37,7 +34,7 @@ ctenc_NodeCountEnc:
   raw_bn: False
   dim_ogct: 42
   dim_hid: 42
-  dim_ct: 28
+  dim_ct: 42
   n_layers: 2
   dropout: 0.0
   norm: batch_norm
@@ -56,8 +53,8 @@ model:
   graph_pooling: add
 gt:
   layer_type: GritTransformer
-  layers: 8
-  n_heads: 6
+  layers: 10
+  n_heads: 8
   dim_hidden: 64  # `gt.dim_hidden` must match `gnn.dim_inner`
   dropout: 0.0
   layer_norm: False

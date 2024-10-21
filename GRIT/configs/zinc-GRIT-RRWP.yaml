@@ -4,10 +4,12 @@ metric_best: mae
 metric_agg: argmin
 tensorboard_each_run: True  # Log to Tensorboard each run
 accelerator: "cuda:0"
-mlflow:
-  use: False
-  project: Exp
-  name: zinc-GRIT-RRWP
+wandb:
+  use: True
+  project: Zinc-GRIT
+  group: RRWP
+  entity: MoSE-experiments
+  tags: ['baseline']
 wandb:
   use: False
   project: ZINC
