@@ -683,11 +683,15 @@ def preformat_Synth(pre_dataset_dir,name, postfix=None): #FLAGsyn
     print(f'Loading SYNTH with node_feats {feats} and target {name}')
 
     if feats == 'none' or feats == 'All5':#we load all5 for none node-features, and simply ignore the counts
-        dataset_dir = f'{pre_dataset_dir}All5'
+        dataset_dir = f'{pre_dataset_dir}All5_log10'
     elif feats == 'Spasm':
         dataset_dir = f'{pre_dataset_dir}Spasm'
+    elif feats == "Spasm10" or feats == "spasm10": #FLAGfd
+        dataset_dir = f'{pre_dataset_dir}Spasm_log10'
+    elif feats == "All510" or feats == "all510": #FLAGfd
+        dataset_dir = f'{pre_dataset_dir}All5_log10'
     else:
-        raise Exception('Choose valid node features: none or Spasm or All5')
+        raise Exception('Choose valid node features: none or Spasm or All5 or Spasm10 or All510') #FLAGfd
     print(f'Loading from directory: {dataset_dir}')
 
     load_dir = osp.join(dataset_dir,"processed","joined.pt")
@@ -695,15 +699,17 @@ def preformat_Synth(pre_dataset_dir,name, postfix=None): #FLAGsyn
 
     if feats == 'none':#ignore counts (use torch.emedding nodeEncoder to encoder the one trivial node type)
         dataset.data['x'] = torch.zeros_like(dataset.data['x'], dtype=torch.int32)#x is already set as blank ones tensor, just have to cast to int tensor of zeros for torch.embeddings
-    elif feats == 'Spasm' or feats == 'All5':
+    else: #FLAGfd
         dataset.data['x'] = dataset.data['homcounts'] #otherwise, treat the homcounts as the node features (use MLPnodeEncoder to encode counts)
 
     if name == 'SpecRad': #set y as the appropriate target
         dataset.data['y'] = dataset.data['spectral_radius']
     elif name == 'AvgClust':
         dataset.data['y'] = dataset.data['avg_clustering']
+    elif name == "FracDom": #FLAGfd
+        dataset.data['y'] = dataset.data['fractional_domination']
     else:
-        raise Exception('Choose a valid target: SpecRad or AvgClust')
+        raise Exception('Choose a valid target: SpecRad or AvgClust or FracDom')
 
     return dataset
 
