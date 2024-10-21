@@ -49,7 +49,7 @@ def join_dataset_splits(datasets):
 
     return datasets[0]
 
-def load_synth_dataset(filename, root):
+def load_synth_dataset(filename, root, log10=False):
     bias_type='homcounts'
     dataset = dill.load(open(os.path.join(root, filename), 'rb'))
     
@@ -67,14 +67,26 @@ def load_synth_dataset(filename, root):
                 graph_counts.append(v)
             homcounts = torch.Tensor(graph_counts)
 
-        pyg_data = Data(
+        if log10:
+            homcounts = torch.nan_to_num(homcounts, neginf=-1.0)
+            pyg_data = Data(
             x = x_feat,
             y = torch.Tensor([1.0]), #placeholder y value
             edge_index = pyg.edge_index,
             spectral_radius = torch.Tensor([np.real(graph['spectral_radius'])]),
             avg_clustering = torch.Tensor([graph['avg_clustering']]),
+            fractional_domination = torch.Tensor([graph['fracdom' ]]),
             homcounts = homcounts,
-        )
+            )
+        else:
+            pyg_data = Data(
+                x = x_feat,
+                y = torch.Tensor([1.0]), #placeholder y value
+                edge_index = pyg.edge_index,
+                spectral_radius = torch.Tensor([np.real(graph['spectral_radius'])]),
+                avg_clustering = torch.Tensor([graph['avg_clustering']]),
+                homcounts = homcounts,
+            )
             
         # if bias_type == 'rwse':
         #     transform = T.AddRandomWalkPE(walk_length=20, attr_name=None)
@@ -113,10 +125,16 @@ def save_synth_dataset_basic(homcounts,verbose=False):
         filename='synth_c78.dill'
     elif homcounts=='All5':
         filename='synth_v5.dill'
+    elif homcounts=='Spasm_log10':
+        filename='synth_mixed_c78_log10.dill'
+    elif homcounts=='All5_log10':
+        filename='synth_mixed_v5_log10.dill'
     else:
         raise Exception('homcounts type not accepted')
 
-    train, val, test, dim = load_synth_dataset(filename=filename, root=raw_data_dir)
+    log10 = 'log10' in filename
+
+    train, val, test, dim = load_synth_dataset(filename=filename, root=raw_data_dir, log10=log10)
     if verbose:
         print('XXXXXXXXXXXXX')
         print(f'train: {train}')
@@ -159,6 +177,11 @@ def save_synth_dataset_basic(homcounts,verbose=False):
     torch.save(dataset, os.path.join(save_in_dir,"joined.pt"))
 
 
-save_synth_dataset_basic('Spasm')
+# save_synth_dataset_basic('Spasm')
 
-save_synth_dataset_basic('All5')
+# save_synth_dataset_basic('All5')
+
+#for log10 counts (Fracdom)
+save_synth_dataset_basic('Spasm_log10')
+
+save_synth_dataset_basic('All5_log10')
