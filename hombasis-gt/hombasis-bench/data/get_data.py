@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 from torch_geometric.datasets import ZINC
+from torch_geometric.transforms import VirtualNode
 
 from ogb.linkproppred import PygLinkPropPredDataset
 
@@ -385,6 +386,62 @@ def add_zinc_hom(name, hom_files, idx_list, root, dataset, wl_count_label=False,
                     counts = torch.Tensor(graph_counts),
                 )
             )
+
+    dataset.data, dataset.slices = dataset.collate(homcount_dataset)
+    return dataset
+
+
+def add_zinc_subhom_vn(name, hom_files, idx_list, sub_file, root, dataset, spasm_count_label=False):    
+    if name == "ZINC":        
+      original_data = [dataset[i] for i in range(len(dataset))]
+    
+    all_hom_data = []
+    for hom_file in hom_files:
+        hom_path = os.path.join(root, hom_file)
+        hom_data = json.load(open(hom_path))
+        all_hom_data.append(hom_data)
+        
+    sub_data = json.load(open(os.path.join(root, sub_file)))
+    homcount_dataset = []
+    for graph_idx in range(len(original_data)):
+        
+        graph_counts = []
+        for v_idx in range(len(original_data[graph_idx].x)):
+            
+            vertex_counts = []
+            for hom_list in all_hom_data:
+                homcounts = hom_list[str(graph_idx)]['homcounts'][str(v_idx)]
+                vertex_counts += homcounts
+                
+            if len(idx_list) > 0:
+                vertex_counts = np.array(vertex_counts)[idx_list].tolist()
+
+            if "anchor" in sub_file:
+                sub_counts = sub_data[str(graph_idx)]['subcounts'][str(v_idx)][:-2] # for anchored spasm
+            else:
+                sub_counts = sub_data[str(graph_idx)][str(v_idx)] # for spasm
+            vertex_counts += sub_counts
+            graph_counts.append(vertex_counts)
+        if spasm_count_label:
+            proc_data = Data(
+                    x = original_data[graph_idx].x, 
+                    edge_index = original_data[graph_idx].edge_index, 
+                    edge_attr = original_data[graph_idx].edge_attr, 
+                    y = original_data[graph_idx].y,
+                    counts_spasm = torch.Tensor(graph_counts),
+                )
+            proc_data = VirtualNode()(proc_data)
+            homcount_dataset.append(proc_data)
+        else:
+            proc_data = Data(
+                    x = original_data[graph_idx].x, 
+                    edge_index = original_data[graph_idx].edge_index, 
+                    edge_attr = original_data[graph_idx].edge_attr, 
+                    y = original_data[graph_idx].y,
+                    counts = torch.Tensor(graph_counts),
+                )
+            proc_data = VirtualNode()(proc_data)
+            homcount_dataset.append(proc_data)
 
     dataset.data, dataset.slices = dataset.collate(homcount_dataset)
     return dataset

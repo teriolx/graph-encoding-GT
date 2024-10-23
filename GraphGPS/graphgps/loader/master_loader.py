@@ -590,53 +590,15 @@ def preformat_ZINC(dataset_dir, name, postfix=None):
         [ZINC(root=dataset_dir, subset=(name == 'subset'), split=split)
         for split in ['train', 'val', 'test']]
     )
-    if postfix != None and "Spasm" in postfix and "WLtree_full" in postfix and name == 'subset':
+
+    if postfix != None and "Spasm" in postfix and name == 'subset':
         count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
         idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
         sub_file = 'zinc_3to8C_multhom.json'
-        dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset, spasm_count_label=True)
-        count_file = 'with_homs_wlfull.json'
-        idx_list = [] #assuming I don't need to omit any of the counts included in Mattihas' file
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset, wl_count_label=True, preserve_counts_spasm=True)
-
-    elif postfix != None and "Spasm" in postfix and "2WLtree" in postfix and name == 'subset': #FLAG2
-        count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
-        idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
-        sub_file = 'zinc_3to8C_multhom.json'
-        dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset, spasm_count_label=True)
-        count_file = 'with_homs_wlfull.json'
-        idx_list = [0,1,2,4,7] #for simulating 2-layer MPNN
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset, wl_count_label=True, preserve_counts_spasm=True)
-
-    elif postfix != None and "Spasm" in postfix and "WLtree" in postfix and name == 'subset':
-        count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
-        idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
-        sub_file = 'zinc_3to8C_multhom.json'
-        dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset, spasm_count_label=True)
-        count_file = "with_homs_wl44.json"
-        idx_list = [] #assuming I don't need to omit any of the counts included in Mattihas' file
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset, wl_count_label=True, preserve_counts_spasm=True)
-
-    elif postfix != None and "Spasm" in postfix and name == 'subset':
-        count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
-        idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
-        sub_file = 'zinc_3to8C_multhom.json'
-        dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
-    
-    elif postfix != None and "WLtree_full" in postfix and name == 'subset':
-        count_file = 'with_homs_wlfull.json'
-        idx_list = [] #assuming I don't need to omit any of the counts included in Mattihas' file
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset)
-    
-    elif postfix != None and "2WLtree" in postfix and name == 'subset': #FLAG2
-        count_file = 'with_homs_wlfull.json'
-        idx_list = [0,1,2,4,7] #for simulating 2-layer MPNN
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset)
-
-    elif postfix != None and "WLtree" in postfix and name == "subset":
-        count_file = "with_homs_wl44.json"
-        idx_list = [] #assuming I don't need to omit any of the counts included in Mattihas' file
-        dataset = get_data.add_zinc_hom(name='ZINC', hom_files=count_file, idx_list=idx_list, root=data_dir, dataset=dataset)
+        if cfg.dataset.virtual_node == True:
+            dataset = get_data.add_zinc_subhom_vn(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
+        else:
+            dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
 
     return dataset
 
