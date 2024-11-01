@@ -6,7 +6,7 @@ wandb:
   use: True
   project: synth-MLP
   group: synth-MLP-lapPE
-  entity: MoSE-experiments
+  entity: YOUR_ENTITY_HERE
 dataset:
   format: EmJ-Synth
   name: FracDom
