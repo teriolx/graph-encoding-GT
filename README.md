@@ -1,6 +1,6 @@
 # MoSE
 
-Code base for "Homomorphism Counts as Structural Encodings for Graph Learning" and "Homomorphism Counts as Structural Encodings for Molecular Property Prediction" (NeurIPS AIDrugX Workshop 2024).
+Code base for ["Homomorphism Counts as Structural Encodings for Graph Learning"](https://arxiv.org/abs/2410.18676) (also presented under the title "Homomorphism Counts as Structural Encodings for Molecular Property Prediction" at the NeurIPS 2024 AIDrugX Workshop).
 
 Our repository combines the [GraphGPS](https://github.com/rampasek/GraphGPS.git) repository from ["Recipe for a General, Powerful, Scalable Graph Transformer"](https://arxiv.org/abs/2205.12454), the [hombasis-gnn](https://github.com/ejin700/hombasis-gnn.git) repository from ["Homomorphism Counts for Graph Neural Networks"](https://arxiv.org/abs/2402.08595), and the [GRIT](https://github.com/LiamMa/GRIT) repository from ["Graph Inductive Biases in Transformers without Message Passing"](https://arxiv.org/abs/2305.17589).
 
@@ -53,3 +53,5 @@ python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-G
 ```
 
 To run experiments with GRIT, use the `GRIT/main.py` script instead of `GraphGPS/main.py`, and use config files given in `GRIT/configs/`.
+
+**Caution**: The model hyperparameters in the experimental details section of our [ArXiv](https://arxiv.org/abs/2410.18676) posting has some mistakes. We will post a revised version with the correct hyperparameters (and a few other exciting experimental results on additional datasets!) as soon as we can :blush:. For now, please reference the "config" directories in this repository for hyperparameters details.
