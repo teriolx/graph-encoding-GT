@@ -46,10 +46,10 @@ python GraphGPS/main.py --cfg "/path_to/configuration.yaml" --repeat 1 wandb.use
 For example, replicate the best result for ZINC GPS+Spasm by running:
 
 ```bash
-python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 0
-python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 14
-python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 48
-python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC-big-model-repeats/ZINCe-GPS-repeats/hc.yaml" --repeat 1 wandb.use True seed 96
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC/With_Edge_Features/GPSe/+spasm.yaml" --repeat 1 wandb.use True seed 0
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC/With_Edge_Features/GPSe/+spasm.yaml" --repeat 1 wandb.use True seed 14
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC/With_Edge_Features/GPSe/+spasm.yaml" --repeat 1 wandb.use True seed 48
+python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC/With_Edge_Features/GPSe/+spasm.yaml" --repeat 1 wandb.use True seed 96
 ```
 
 To run experiments with GRIT, use the `GRIT/main.py` script instead of `GraphGPS/main.py`, and use config files given in `GRIT/configs/`.
