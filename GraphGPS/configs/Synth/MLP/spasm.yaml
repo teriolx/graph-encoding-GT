@@ -5,29 +5,20 @@ seed: 0
 wandb:
   use: True
   project: synth-MLP
-  group: synth-MLP-RWSE
+  group: Spasm
   entity: YOUR_ENTITY_HERE
 dataset:
-  format: EmJ-Synth
+  format: EmJ-Synth-Spasm10
   name: FracDom
   task: graph
   task_type: regression
   transductive: False
   follow_edge_batch: True #set to true when processing edge features in parallel
   node_encoder: True
-  node_encoder_name: TypeDictNode+RWSE
-  node_encoder_num_types: 1
-  node_encoder_bn: False
-  edge_encoder: False
-posenc_RWSE:
-  enable: True
-  kernel:
-    times_func: range(1,21)
-  model: mlp_flat
-  dim_pe: 63
-  raw_norm_type: BatchNorm
-  layers: 2
-  norm: "batch_norm"
+  node_encoder_name: MLPNodeEnc
+  node_encoder_init_dim: 43
+  node_encoder_hid_dim: 64
+  node_encoder_depths: 2
 train:
   mode: custom
   batch_size: 128
@@ -37,7 +28,7 @@ model:
   type: MLPGraphReg
   loss_fun: l1
   edge_decoding: dot
-  graph_pooling: add
+  graph_pooling: mean
 mlp:
   layers: 4
   dim_hidden: 145
@@ -53,5 +44,4 @@ optim:
   schedule_patience: 10
   base_lr: 0.001
   max_epoch: 1000
-  scheduler: StepLR_with_warmup
-  num_warmup_epochs: 0
+  scheduler: reduce_on_plateau
