@@ -56,5 +56,3 @@ python GraphGPS/main.py --cfg "./GraphGPS/configs/ZINC/With_Edge_Features/GPSe/+
 ```
 
 To run experiments with GRIT, use the `GRIT/main.py` script instead of `GraphGPS/main.py`, and use config files given in `GRIT/configs/`.
-
-**Caution**: The model hyperparameters in the experimental details section of our [ArXiv](https://arxiv.org/abs/2410.18676) posting has some mistakes. We will post a revised version with the correct hyperparameters (and a few other exciting experimental results on additional datasets!) as soon as we can :blush:. For now, please reference the "config" directories in this repository for hyperparameters details.
