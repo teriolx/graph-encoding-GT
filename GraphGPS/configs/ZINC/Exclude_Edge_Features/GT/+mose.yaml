@@ -4,7 +4,7 @@ metric_agg: argmin
 wandb:
   use: True
   project: ZINC-GT
-  group: Spasm
+  group: MoSE
   entity: YOUR_ENTITY_HERE
 dataset:
   format: PyG-ZINC-Spasm

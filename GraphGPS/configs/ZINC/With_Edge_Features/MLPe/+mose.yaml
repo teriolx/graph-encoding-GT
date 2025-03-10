@@ -5,7 +5,7 @@ seed: 0
 wandb:
   use: True
   project: ZINC-MLPe
-  group: Spasm+RWSE
+  group: MoSE
   entity: YOUR_ENTITY_HERE
 dataset:
   format: PyG-ZINC-Spasm
@@ -15,27 +15,18 @@ dataset:
   transductive: False
   follow_edge_batch: True #set to true when processing edge features in parallel
   node_encoder: True
-  node_encoder_name: TypeDictNode+NodeCountEnc+RWSE
+  node_encoder_name: TypeDictNode+NodeCountEnc
   node_encoder_num_types: 28
   node_encoder_bn: False
   edge_encoder: True
   edge_encoder_name: TypeDictEdge
   edge_encoder_num_types: 4
   edge_encoder_bn: False
-posenc_RWSE:
-  enable: True
-  kernel:
-    times_func: range(1,21)
-  model: mlp_flat
-  dim_pe: 16
-  raw_norm_type: BatchNorm
-  layers: 2
-  norm: "batch_norm"
 ctenc_NodeCountEnc:
   raw_bn: False
   dim_ogct: 42
-  dim_hid: 28
-  dim_ct: 16
+  dim_hid: 42
+  dim_ct: 28
   n_layers: 2
   dropout: 0.0
   norm: batch_norm
@@ -52,7 +43,7 @@ model:
   edge_decoding: dot
   graph_pooling: add
 mlp:
-  layers: 2
+  layers: 8
   dim_hidden: 64
   residual_connection: True
   batch_norm: True
@@ -61,14 +52,14 @@ mlp:
     type: san_graph
     hidden_layers: 2
   edge_encoder:
-    layers: 8
-    dim_hidden: 128
+    layers: 2
+    dim_hidden: 64
     residual_connection: True
     batch_norm: True
     dropout: 0.1
   graph_encoder:
     layers: 4
-    dim_hidden: 192
+    dim_hidden: 128
     residual_connection: True
     batch_norm: True
     dropout: 0.1

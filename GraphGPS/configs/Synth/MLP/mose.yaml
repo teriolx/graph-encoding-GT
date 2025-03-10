@@ -5,7 +5,7 @@ seed: 0
 wandb:
   use: True
   project: synth-MLP
-  group: Spasm
+  group: MoSE
   entity: YOUR_ENTITY_HERE
 dataset:
   format: EmJ-Synth-Spasm10

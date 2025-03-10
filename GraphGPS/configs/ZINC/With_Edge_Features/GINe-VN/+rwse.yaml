@@ -3,8 +3,9 @@ metric_best: mae
 metric_agg: argmin
 wandb:
   use: True
-  group: GINE-vn-pe
-  project: GINE-vn
+  project: ZINC-GINeVN
+  group: RWSE
+  entity: YOUR_ENTITY_HERE
 dataset:
   format: PyG-ZINC
   name: subset
