@@ -601,6 +601,7 @@ def preformat_ZINC(dataset_dir, name, postfix=None):
             else:
                 dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
         elif "LPCA" in postfix:
+            data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench', 'data', 'zinc')
             dataset = get_data.add_zinc_lpca(os.path.join(data_dir, postfix.lower() + ".npz"), dataset=dataset)
     return dataset
 
