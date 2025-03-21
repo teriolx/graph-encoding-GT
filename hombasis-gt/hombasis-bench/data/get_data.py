@@ -451,15 +451,17 @@ def add_zinc_lpca(root, dataset):
     result = []
     matrices = np.load(root)
 
-    for i in len(dataset):
+    for i in range(len(dataset)):
         m = matrices[f"idx_{i}"]
-        result.append(Data(
+        result.append(
+            Data(
                     x = dataset[i].x, 
                     edge_index = dataset[i].edge_index, 
                     edge_attr = dataset[i].edge_attr, 
                     y = dataset[i].y,
                     counts = torch.Tensor(m),
-                ))
+            )
+        )
         
     dataset.data, dataset.slices = dataset.collate(result)
     return dataset
