@@ -591,15 +591,17 @@ def preformat_ZINC(dataset_dir, name, postfix=None):
         for split in ['train', 'val', 'test']]
     )
 
-    if postfix != None and "Spasm" in postfix and name == 'subset':
-        count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
-        idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
-        sub_file = 'zinc_3to8C_multhom.json'
-        if cfg.dataset.virtual_node == True:
-            dataset = get_data.add_zinc_subhom_vn(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
-        else:
-            dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
-
+    if postfix != None and name == 'subset':
+        if "Spasm" in postfix:
+            count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
+            idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+            sub_file = 'zinc_3to8C_multhom.json'
+            if cfg.dataset.virtual_node == True:
+                dataset = get_data.add_zinc_subhom_vn(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
+            else:
+                dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
+        elif "LPCA" in postfix:
+            dataset = get_data.add_zinc_lpca(os.path.join(data_dir, postfix.lower()), dataset=dataset)
     return dataset
 
 def preformat_QM9(dataset_dir,name, postfix=None, de_normalize=False):

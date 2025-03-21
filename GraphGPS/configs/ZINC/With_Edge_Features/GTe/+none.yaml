@@ -4,7 +4,7 @@ metric_agg: argmin
 wandb:
   use: True
   project: ZINC-GTe
-  group: None
+  group: No
   entity: YOUR_ENTITY_HERE
 dataset:
   format: PyG-ZINC
