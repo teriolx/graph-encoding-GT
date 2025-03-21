@@ -1,7 +1,6 @@
 import os
 import json
 import numpy as np
-import scipy as sp
 
 import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
@@ -448,17 +447,18 @@ def add_zinc_subhom_vn(name, hom_files, idx_list, sub_file, root, dataset, spasm
     return dataset
 
 
-def add_zinc_lpca(root_dir, dataset):
+def add_zinc_lpca(root, dataset):
     result = []
+    matrices = np.load(root)
 
     for i in len(dataset):
-        m = sp.io.loadmat(os.path.join(root_dir, f"idx_{i}.mat"))
+        m = matrices[f"idx_{i}"]
         result.append(Data(
                     x = dataset[i].x, 
                     edge_index = dataset[i].edge_index, 
                     edge_attr = dataset[i].edge_attr, 
                     y = dataset[i].y,
-                    counts = torch.Tensor(m['U']),
+                    counts = torch.Tensor(m),
                 ))
         
     dataset.data, dataset.slices = dataset.collate(result)
