@@ -16,6 +16,7 @@ from graphgps.encoder.equivstable_laplace_pos_encoder import EquivStableLapPENod
 from graphgps.encoder.graphormer_encoder import GraphormerEncoder
 from graphgps.encoder.MLP_count_encoder import MLPNodeCountEncoder, MLPGraphCountEncoder, MLPNodeCountEncoderX2, NodeCountSum
 from graphgps.encoder.MLP_encoder import MLPNodeEncoder
+from graphgps.encoder.lpca_encoder import LPCAEncoder
 
 
 def concat_node_encoders(encoder_classes, pe_enc_names):
@@ -177,7 +178,8 @@ pe_encs = {'LapPE': LapPENodeEncoder,
 # Count Encoding node encoders.
 ct_encs = {'NodeCountEnc': MLPNodeCountEncoder,
            'GraphCountEnc': MLPGraphCountEncoder,
-           'NodeCountEncX2': MLPNodeCountEncoderX2}
+           'NodeCountEncX2': MLPNodeCountEncoderX2,
+           'LPCAEnc': LPCAEncoder}
 
 # Concat dataset-specific and PE encoders.
 for ds_enc_name, ds_enc_cls in ds_encs.items():
