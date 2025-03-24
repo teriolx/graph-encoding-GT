@@ -14,7 +14,7 @@ dataset:
   transductive: False
   node_encoder: True
   node_encoder_name: TypeDictNode+LPCAEnc
-  node_encoder_num_types: 28
+  node_encoder_num_types: 21
   node_encoder_bn: False
   edge_encoder: False
 ctenc_LPCAEnc:
