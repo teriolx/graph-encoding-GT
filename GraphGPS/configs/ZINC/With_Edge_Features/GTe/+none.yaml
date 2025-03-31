@@ -3,7 +3,7 @@ metric_best: mae
 metric_agg: argmin
 wandb:
   use: True
-  project: ZINC-GTe
+  project: ZINC
   group: No
   entity: YOUR_ENTITY_HERE
 dataset:
@@ -36,9 +36,6 @@ gt:
   layer_norm: False
   batch_norm: True
   residual: True
-  varied_width: True
-  dim_initial: 92
-  initial_depth: 4
 gnn:
   head: san_graph
   layers_pre_mp: 0 #not usd when set to 0
