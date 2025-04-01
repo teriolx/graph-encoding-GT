@@ -159,4 +159,5 @@ dmypy.json
 # vim edit buffer
 *.swp
 
-
+# sbatch scripts
+run_*
