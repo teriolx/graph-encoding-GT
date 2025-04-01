@@ -446,7 +446,6 @@ def add_zinc_subhom_vn(name, hom_files, idx_list, sub_file, root, dataset, spasm
     dataset.data, dataset.slices = dataset.collate(homcount_dataset)
     return dataset
 
-
 def add_zinc_lpca(root, dataset):
     result = []
     matrices = np.load(root)
@@ -459,9 +458,10 @@ def add_zinc_lpca(root, dataset):
                     edge_index = dataset[i].edge_index, 
                     edge_attr = dataset[i].edge_attr, 
                     y = dataset[i].y,
-                    counts = torch.Tensor(m),
+                    lpca_enc = torch.Tensor(m),
             )
         )
         
     dataset.data, dataset.slices = dataset.collate(result)
+
     return dataset
