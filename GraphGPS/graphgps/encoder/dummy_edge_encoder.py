@@ -25,9 +25,11 @@ class DummyNodeEncoder(torch.nn.Module):
 
         self.enc_dim = cfg.ctenc_DummyNode.dim_ct
         self.emb_dim = emb_dim
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
     def forward(self, batch):
-        batch.x = torch.cat((batch.x, torch.ones(batch.x.shape[0], self.enc_dim)), 1)
+        batch.x = torch.cat((batch.x, torch.ones(batch.x.shape[0], self.enc_dim, 
+                                                 device=self.device)), 1)
         assert batch.x.shape[1] == self.emb_dim
         return batch
