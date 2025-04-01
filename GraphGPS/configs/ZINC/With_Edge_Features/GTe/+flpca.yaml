@@ -3,7 +3,7 @@ metric_best: mae
 metric_agg: argmin
 wandb:
   use: True
-  project: ZINC-GTe
+  project: ZINC
   group: fLPCA
   entity: YOUR_ENTITY_HERE
 dataset:
@@ -13,18 +13,12 @@ dataset:
   task_type: regression
   transductive: False
   node_encoder: True
-  node_encoder_name: TypeDictNode+NodeCountEnc
+  node_encoder_name: TypeDictNode+LPCAEnc
   node_encoder_num_types: 28
   node_encoder_bn: False
   edge_encoder: False
-ctenc_NodeCountEnc:
-  raw_bn: False
-  dim_ogct: 24
-  dim_hid: 24
-  dim_ct: 28
-  n_layers: 2
-  dropout: 0.0
-  norm: batch_norm
+ctenc_LPCAEnc:
+  dim_ct: 24
 train:
   mode: custom
   batch_size: 32
@@ -44,9 +38,6 @@ gt:
   layer_norm: False
   batch_norm: True
   residual: True
-  varied_width: True
-  dim_initial: 92
-  initial_depth: 4
 gnn:
   head: san_graph
   layers_pre_mp: 0 #not usd when set to 0
