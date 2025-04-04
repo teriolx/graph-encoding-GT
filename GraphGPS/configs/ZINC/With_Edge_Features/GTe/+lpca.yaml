@@ -19,6 +19,7 @@ dataset:
   edge_encoder: False
 ctenc_LPCAEnc:
   dim_ct: 16
+  pass_as_var: True
 train:
   mode: custom
   batch_size: 32

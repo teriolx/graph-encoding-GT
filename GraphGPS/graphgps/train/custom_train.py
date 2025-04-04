@@ -229,9 +229,10 @@ def custom_train(loggers, loaders, model, optimizer, scheduler):
                 f"val_loss: {perf[1][best_epoch]['loss']:.4f} {best_val}\t"
                 f"test_loss: {perf[2][best_epoch]['loss']:.4f} {best_test}"
             )
-            if hasattr(model, 'trf_layers'):
+            
+            if hasattr(model.model, 'trf_layers'):
                 # Log SAN's gamma parameter values if they are trainable.
-                for li, gtl in enumerate(model.trf_layers):
+                for li, gtl in enumerate(model.model.trf_layers):
                     if torch.is_tensor(gtl.attention.gamma) and \
                             gtl.attention.gamma.requires_grad:
                         logging.info(f"    {gtl.__class__.__name__} {li}: "
