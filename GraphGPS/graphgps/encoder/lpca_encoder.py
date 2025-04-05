@@ -15,8 +15,10 @@ class LPCAEncoder(torch.nn.Module):
 
     def forward(self, batch):
         lpca_enc = getattr(batch, 'lpca_enc')
-        batch.x = torch.cat((batch.x, lpca_enc), 1)
-        assert batch.x.shape[1] == self.emb_dim
+
+        if self.enc_dim > 0:
+            batch.x = torch.cat((batch.x, lpca_enc), 1)
+            assert batch.x.shape[1] == self.emb_dim
 
         if self.pass_as_var:
             setattr(batch, 'lpca_enc', lpca_enc)
