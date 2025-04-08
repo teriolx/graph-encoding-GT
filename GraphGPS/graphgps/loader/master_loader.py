@@ -9,7 +9,7 @@ import torch_geometric.transforms as T
 from numpy.random import default_rng
 from ogb.graphproppred import PygGraphPropPredDataset
 from torch_geometric.datasets import (Actor, GNNBenchmarkDataset, Planetoid,
-                                      TUDataset, WebKB, WikipediaNetwork, ZINC)
+                                      TUDataset, WebKB, WikipediaNetwork, ZINC, LRGBDataset)
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.loader import load_pyg, load_ogb, set_dataset_attr
 from torch_geometric.graphgym.register import register_loader
@@ -25,7 +25,7 @@ from graphgps.transform.task_preprocessing import task_specific_preprocessing
 from graphgps.transform.transforms import (pre_transform_in_memory,
                                            typecast_x, concat_x_and_pos,
                                            clip_graphs_to_size)
-
+from torch_geometric.transforms import VirtualNode
 
 from pathlib import Path
 import sys
@@ -33,8 +33,17 @@ import os
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench'))
 from data import get_data
 
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt')) #FLAGother
+from image-datasets import add_data
+
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'pcqm'))
+import get_pcqm_data
+
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','qm9','data_GraphGym_QM9'))
 from CustomDataset import CustomDataset
+
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'peptides'))#FLAGpep
+import get_pep_data #FLAGpep
 
 
 def log_loaded_dataset(dataset, format, name):
@@ -169,6 +178,14 @@ def load_dataset_master(format, name, dataset_dir):
             subset = name.split('-', 1)[1]
             dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset)
 
+        elif name.startswith('PCQM4Mv2+All5'):
+            subset = name.split('-', 1)[1]
+            dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset, 'All5')
+            
+        elif name.startswith('PCQM4Mv2+Spasm'):
+            subset = name.split('-', 1)[1]
+            dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset, 'Spasm')
+
         elif name.startswith('peptides-'):
             dataset = preformat_Peptides(dataset_dir, name)
 
@@ -282,7 +299,7 @@ def compute_indegree_histogram(dataset):
     return deg.numpy().tolist()[:max_degree + 1]
 
 
-def preformat_GNNBenchmarkDataset(dataset_dir, name):
+def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
     """Load and preformat datasets from PyG's GNNBenchmarkDataset.
 
     Args:
@@ -292,11 +309,29 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name):
     Returns:
         PyG dataset object
     """
+    data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','image-datasets', 'data')
+    homcount_name = None
     if name in ['MNIST', 'CIFAR10']:
         tf_list = [concat_x_and_pos]  # concat pixel value and pos. coordinate
         tf_list.append(partial(typecast_x, type_str='float'))
     elif name in ['PATTERN', 'CLUSTER', 'CSL']:
         tf_list = []
+    elif name in ['MNIST-Spasm', 'CIFAR10-Spasm', 'MNIST-All5', 'CIFAR10-All5']:
+        tf_list = [concat_x_and_pos]  # concat pixel value and pos. coordinate
+        tf_list.append(partial(typecast_x, type_str='float'))
+        dataset_name, homcount_name = name.split('-', 1)
+        if dataset_name == 'MNIST':
+            data_dir = os.path.join(data_dir, 'MNIST')
+            if homcount_name == 'Spasm':
+                hom_files = ['mnist_c7.json','mnist_c8.json']
+            elif homcount_name == 'All5':
+                hom_files = ['mnist_v5.json']
+        elif dataset_name == 'CIFAR10':
+            data_dir = os.path.join(data_dir, 'CIFAR')
+            if homcount_name == 'Spasm':
+                hom_files = ['cifar_c7.json','cifar_c8.json']
+            elif homcount_name == 'All5':
+                hom_files = ['cifar_v5.json']
     else:
         raise ValueError(f"Loading dataset '{name}' from "
                          f"GNNBenchmarkDataset is not supported.")
@@ -307,6 +342,13 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name):
             for split in ['train', 'val', 'test']]
         )
         pre_transform_in_memory(dataset, T.Compose(tf_list))
+    elif homcount_name != None:
+        dataset = join_dataset_splits(
+            [GNNBenchmarkDataset(root=dataset_dir, name=dataset_name, split=split)
+            for split in ['train', 'val', 'test']]
+        )
+        pre_transform_in_memory(dataset, T.Compose(tf_list))
+        dataset = add_data.add_hom(hom_files=hom_files,idx_list=[],root=data_dir,dataset=dataset)
     elif name == 'CSL':
         dataset = GNNBenchmarkDataset(root=dataset_dir, name=name)
 
@@ -398,7 +440,7 @@ def preformat_OGB_Graph(dataset_dir, name):
     return dataset
 
 
-def preformat_OGB_PCQM4Mv2(dataset_dir, name):
+def preformat_OGB_PCQM4Mv2(dataset_dir, name, homcount_type):
     """Load and preformat PCQM4Mv2 from OGB LSC.
 
     OGB-LSC provides 4 data index splits:
@@ -442,6 +484,7 @@ def preformat_OGB_PCQM4Mv2(dataset_dir, name):
                       ]
 
     elif name == 'subset':
+        print('in PCQM subset loader!!')
         # Further subset the training set for faster debugging.
         subset_ratio = 0.1
         subtrain_idx = train_idx[:int(subset_ratio * len(train_idx))]
@@ -449,10 +492,37 @@ def preformat_OGB_PCQM4Mv2(dataset_dir, name):
         subtest_idx = split_idx['valid']  # The original 'valid' as testing set.
 
         dataset = dataset[torch.cat([subtrain_idx, subvalid_idx, subtest_idx])]
+        
+        print(type(dataset))
+        
         data_list = [data for data in dataset]
+        print(data_list[0])
+        
+        print('adding homcounts!!')
+        data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','pcqm', 'data')
+        
+        if homcount_type == 'All5':
+            homcount_file = 'pcqm_v5.json'
+        elif homcount_type == 'Spasm':
+            homcount_file = 'pcqm_c78.json'
+        else:
+            raise ValueError(f'Invalid homcount type')
+        
+        data_list = get_pcqm_data.add_pcqm_hom(homcount_file, data_dir, data_list)
+
+        print('done adding homcounts!!')
+        print(data_list[0])
+
+        
         dataset._indices = None
         dataset._data_list = data_list
         dataset.data, dataset.slices = dataset.collate(data_list)
+        
+        print('after coallating!!')
+        print(type(dataset.data))
+        # assert False
+        
+        
         n1, n2, n3 = len(subtrain_idx), len(subvalid_idx), len(subtest_idx)
         split_idxs = [list(range(n1)),
                       list(range(n1, n1 + n2)),
@@ -516,7 +586,7 @@ def preformat_PCQM4Mv2Contact(dataset_dir, name):
     return dataset
 
 
-def preformat_Peptides(dataset_dir, name):
+def preformat_Peptides(dataset_dir, name): #FLAGpep
     """Load Peptides dataset, functional or structural.
 
     Note: This dataset requires RDKit dependency!
@@ -530,24 +600,38 @@ def preformat_Peptides(dataset_dir, name):
     Returns:
         PyG dataset object
     """
-    try:
-        # Load locally to avoid RDKit dependency until necessary.
-        from graphgps.loader.dataset.peptides_functional import \
-            PeptidesFunctionalDataset
-        from graphgps.loader.dataset.peptides_structural import \
-            PeptidesStructuralDataset
-    except Exception as e:
-        logging.error('ERROR: Failed to import Peptides dataset class, '
-                      'make sure RDKit is installed.')
-        raise e
+    save_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'datasets')
 
     dataset_type = name.split('-', 1)[1]
+
+    if '-' in dataset_type:
+        dataset_type, hom_type = dataset_type.split('-', 1)
+    else:
+        hom_type = None
+
     if dataset_type == 'functional':
-        dataset = PeptidesFunctionalDataset(dataset_dir)
+        dataset_type = 'peptides-func'
     elif dataset_type == 'structural':
-        dataset = PeptidesStructuralDataset(dataset_dir)
-    s_dict = dataset.get_idx_split()
-    dataset.split_idxs = [s_dict[s] for s in ['train', 'val', 'test']]
+        dataset_type = 'peptides-struct'
+
+    print(f'DATASET NAME : {dataset_type}')
+    dataset = join_dataset_splits(
+        [LRGBDataset(root=save_dir, name=dataset_type, split=split)
+        for split in ['train', 'val', 'test']]
+    )
+
+    if hom_type != None:
+        data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','peptides', 'data')
+        if hom_type == 'Spasm' or hom_type == 'spasm':
+            hom_file = "peptides_c78.json"
+        elif hom_type == 'All5' or hom_type == 'all5':
+            hom_file = 'peptides_v5c6.json'
+        else:
+            raise Exception('Specify dataset to load by giving dataset.name as peptides-X-Y where X can be \"functional\" or \"structural\" and Y can be \"Spasm\", \"All5\", or nothing at all.')
+
+        idx_list = [] #assuming using all counts in JSON
+        dataset = get_pep_data.add_peptide_hom(hom_file, idx_list, data_dir, dataset)
+
     return dataset
 
 
