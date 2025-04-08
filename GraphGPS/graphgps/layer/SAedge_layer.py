@@ -20,8 +20,6 @@ class MultiHeadAttentionEdgeLayer(nn.Module):
         self.E_fake = nn.Embedding(1, out_dim * num_heads)
         self.V = nn.Linear(in_dim, out_dim * num_heads, bias=use_bias)
 
-        self.gamma = nn.Parameter(torch.tensor(0.1)) 
-
     def propagate_attention(self, batch, edge_src, edge_dest):
         src = batch.K_h[edge_src]  # (num real edges) x num_heads x out_dim
         dest = batch.Q_h[edge_dest]  # (num real edges) x num_heads x out_dim
@@ -29,15 +27,6 @@ class MultiHeadAttentionEdgeLayer(nn.Module):
 
         # Scale scores by sqrt(d)
         score = score / np.sqrt(self.out_dim)
-
-        # Add positional encoding bias
-        k = batch.lpca_enc.shape[1] // 2
-
-        L = batch.lpca_enc[edge_src][:, :k]     # (num_edges, k)
-        R = batch.lpca_enc[edge_dest][:, k:]   # (num_edges, k)
-
-        a_ij = (L * R).sum(-1, keepdim=True).unsqueeze(1)  # (num_edges, 1, 1)
-        score = score + self.gamma * a_ij
 
         # Use available edge features to modify the scores for edges
         score = torch.mul(score, batch.E_total)  # (num real edges) x num_heads x out_dim
