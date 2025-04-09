@@ -33,17 +33,17 @@ import os
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench'))
 from data import get_data
 
-sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt')) #FLAGother
-from image-datasets import add_data
+# sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt')) #FLAGother
+# from image-datasets import add_data
 
-sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'pcqm'))
-import get_pcqm_data
+# sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'pcqm'))
+# import get_pcqm_data
 
-sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','qm9','data_GraphGym_QM9'))
-from CustomDataset import CustomDataset
+# sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','qm9','data_GraphGym_QM9'))
+# from CustomDataset import CustomDataset
 
-sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'peptides'))#FLAGpep
-import get_pep_data #FLAGpep
+# sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'peptides'))#FLAGpep
+# import get_pep_data #FLAGpep
 
 
 def log_loaded_dataset(dataset, format, name):
