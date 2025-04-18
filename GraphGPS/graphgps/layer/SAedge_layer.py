@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_scatter import scatter
+from torch_geometric.graphgym.config import cfg
 
 class MultiHeadAttentionEdgeLayer(nn.Module):
     """Self attention with edge biasing"""
@@ -20,10 +21,18 @@ class MultiHeadAttentionEdgeLayer(nn.Module):
         self.E_fake = nn.Embedding(1, out_dim * num_heads)
         self.V = nn.Linear(in_dim, out_dim * num_heads, bias=use_bias)
 
+        if hasattr(cfg.gt, 'gamma'):
+            self.gamma = nn.Parameter(torch.tensor(cfg.gt.gamma))
+
     def propagate_attention(self, batch, edge_src, edge_dest):
         src = batch.K_h[edge_src]  # (num real edges) x num_heads x out_dim
         dest = batch.Q_h[edge_dest]  # (num real edges) x num_heads x out_dim
         score = torch.mul(src, dest)  # element-wise multiplication
+
+        # Add adjacency information
+        if hasattr(batch, 'lpca_adj'):
+            adj = batch.lpca_adj[edge_src, edge_dest].unsqueeze(-1).unsqueeze(-1) # (num_real_edges) x 1 x 1
+            score = score + self.gamma * adj
 
         # Scale scores by sqrt(d)
         score = score / np.sqrt(self.out_dim)
