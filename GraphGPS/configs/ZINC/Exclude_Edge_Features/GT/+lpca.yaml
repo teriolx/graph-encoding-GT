@@ -4,19 +4,21 @@ metric_agg: argmin
 wandb:
   use: True
   project: ZINC-GT
-  group: NoEnc
+  group: LPCA
   entity: YOUR_ENTITY_HERE
 dataset:
-  format: PyG-ZINC
+  format: PyG-ZINC-LPCA
   name: subset
   task: graph
   task_type: regression
   transductive: False
   node_encoder: True
-  node_encoder_name: TypeDictNode
+  node_encoder_name: TypeDictNode+LPCAEnc
   node_encoder_num_types: 28
   node_encoder_bn: False
   edge_encoder: False
+ctenc_LPCAEnc:
+  dim_ct: 4
 train:
   mode: custom
   batch_size: 32
