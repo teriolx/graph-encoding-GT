@@ -149,7 +149,7 @@ class SAEdgeLayer(nn.Module):
 
         # FFN for h
         h = self.FFN_h_layer1(h)
-        h = F.relu(h)
+        h = F.sigmoid(h)
         h = F.dropout(h, self.dropout, training=self.training)
         h = self.FFN_h_layer2(h)
 
