@@ -17,14 +17,13 @@ dataset:
   edge_encoder: True
   edge_encoder_name: LinearEdge
   edge_encoder_bn: False
-ctenc_NodeCountEnc:
-  raw_bn: False
-  dim_ogct: 30
-  dim_hid: 30
-  dim_ct: 30
-  n_layers: 2
-  dropout: 0.0
-  norm: batch_norm
+posenc_RWSE:
+  enable: True
+  kernel:
+    times_func: range(1,17)
+  model: Linear
+  dim_pe: 16
+  raw_norm_type: BatchNorm
 train:
   mode: custom
   batch_size: 16
