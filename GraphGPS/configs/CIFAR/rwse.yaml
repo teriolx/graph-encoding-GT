@@ -12,7 +12,7 @@ dataset:
   task_type: classification
   transductive: False
   node_encoder: True
-  node_encoder_name: NodeCountEnc
+  node_encoder_name: RWSE
   node_encoder_bn: False
   edge_encoder: True
   edge_encoder_name: LinearEdge
