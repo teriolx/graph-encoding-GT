@@ -7,7 +7,7 @@ wandb:
   entity: YOUR_ENTITY_HERE
 dataset:
   format: PyG-GNNBenchmarkDataset
-  name: CIFAR10
+  name: CIFAR10-LPCA
   task: graph
   task_type: classification
   transductive: False
