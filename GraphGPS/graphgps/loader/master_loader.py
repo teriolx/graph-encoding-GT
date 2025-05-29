@@ -359,7 +359,7 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
             for split in ['train', 'val', 'test']]
         )
         pre_transform_in_memory(dataset, T.Compose(tf_list))
-        dataset = get_data.add_lpca(os.environ["CIFAR_LPCA_DATA_DIR"], ".npz", dataset=dataset)
+        dataset = get_data.add_lpca(os.environ["CIFAR_LPCA_DATA_DIR"], dataset=dataset)
     return dataset
 
 
