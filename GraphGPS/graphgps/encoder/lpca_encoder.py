@@ -19,6 +19,7 @@ class LPCAEncoder(torch.nn.Module):
         if self.enc_dim > 0:
             batch.x = torch.cat((batch.x, lpca_enc), 1)
             print(self.emb_dim)
+            print(batch.x.shape[1])
             assert batch.x.shape[1] == self.emb_dim
 
         if self.pass_as_var:
