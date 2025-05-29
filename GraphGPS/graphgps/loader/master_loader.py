@@ -353,8 +353,9 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
         dataset = GNNBenchmarkDataset(root=dataset_dir, name=name)
 
     if name == "CIFAR10-LPCA":
+        dataset_name, _ = name.split('-', 1)
         dataset = join_dataset_splits(
-            [GNNBenchmarkDataset(root=dataset_dir, name=name, split=split)
+            [GNNBenchmarkDataset(root=dataset_dir, name=dataset_name, split=split)
             for split in ['train', 'val', 'test']]
         )
         pre_transform_in_memory(dataset, T.Compose(tf_list))
