@@ -311,7 +311,7 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
     """
     data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','image-datasets', 'data')
     homcount_name = None
-    if name in ['MNIST', 'CIFAR10']:
+    if name in ['MNIST', 'CIFAR10', 'CIFAR10-LPCA']:
         tf_list = [concat_x_and_pos]  # concat pixel value and pos. coordinate
         tf_list.append(partial(typecast_x, type_str='float'))
     elif name in ['PATTERN', 'CLUSTER', 'CSL']:
@@ -352,7 +352,7 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
     elif name == 'CSL':
         dataset = GNNBenchmarkDataset(root=dataset_dir, name=name)
 
-    if name == "CIFAR-LPCA":
+    if name == "CIFAR10-LPCA":
         dataset = join_dataset_splits(
             [GNNBenchmarkDataset(root=dataset_dir, name=name, split=split)
             for split in ['train', 'val', 'test']]
