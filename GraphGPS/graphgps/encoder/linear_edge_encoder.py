@@ -7,7 +7,7 @@ from torch_geometric.graphgym.register import register_edge_encoder
 class LinearEdgeEncoder(torch.nn.Module):
     def __init__(self, emb_dim):
         super().__init__()
-        if cfg.dataset.name in ['MNIST', 'CIFAR10']:
+        if cfg.dataset.name in ['MNIST', 'CIFAR10', 'CIFAR10-LPCA']:
             self.in_dim = 1
         else:
             raise ValueError("Input edge feature dim is required to be hardset "
