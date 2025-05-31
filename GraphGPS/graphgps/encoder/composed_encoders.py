@@ -236,18 +236,14 @@ def expand_x_encoder(encoder_class):
 
     class Expanded_x(torch.nn.Module):
 
-        encoder = None
-
 
         def __init__(self, dim_emb):
             super().__init__()
-            self.encoder_expanded_x = self.encoder(dim_emb, expand_x=True)
+            self.encoder_expanded_x = encoder_class(dim_emb, expand_x=True)
     
 
         def forward(self, batch):
             return self.encoder_expanded_x(batch)
-
-    Expanded_x.encoder = encoder_class
 
     return Expanded_x
 
