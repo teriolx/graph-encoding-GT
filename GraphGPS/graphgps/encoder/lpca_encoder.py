@@ -14,9 +14,10 @@ class LPCAEncoder(torch.nn.Module):
         self.pass_as_var = cfg.ctenc_LPCAEnc.pass_as_var if hasattr(cfg.ctenc_LPCAEnc, "pass_as_var") else False
         self.dim_in = cfg.ctenc_LPCAEnc.dim_in if hasattr(cfg.ctenc_LPCAEnc, "dim_in") else 0
 
-        if self.expand_x and self.emb_dim - self.enc_dim > 0:
+        self.expand_x = expand_x and self.emb_dim - self.enc_dim > 0
+        if self.expand_x:
             self.linear_x = nn.Linear(self.dim_in, self.emb_dim - self.enc_dim)
-
+        
 
     def forward(self, batch):
         lpca_enc = getattr(batch, 'lpca_enc')
