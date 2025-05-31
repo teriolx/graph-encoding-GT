@@ -15,6 +15,7 @@ class FeatureEncoder(torch.nn.Module):
     def __init__(self, dim_in):
         super(FeatureEncoder, self).__init__()
         self.dim_in = dim_in
+        print("At init", self.dim_in)
         if cfg.dataset.node_encoder or cfg.dataset.edge_encoder or (hasattr(cfg.dataset, "graph_encoder") and cfg.dataset.graph_encoder):
             if hasattr(cfg, "mlp"):
                 dim_inner = cfg.mlp.dim_hidden
@@ -38,6 +39,7 @@ class FeatureEncoder(torch.nn.Module):
                                      has_bias=False, cfg=cfg))
             # Update dim_in to reflect the new dimension of the node features
             self.dim_in = dim_inner
+            print("After node enc", self.dim_in)
         if cfg.dataset.edge_encoder:
             # Hard-limit max edge dim for PNA.
             if 'PNA' in cfg.gt.layer_type:
