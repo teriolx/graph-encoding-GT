@@ -1,6 +1,7 @@
 import torch
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.register import (register_node_encoder)
+from torch import nn
 
 
 @register_node_encoder('LPCAEnc')
@@ -11,17 +12,22 @@ class LPCAEncoder(torch.nn.Module):
         self.enc_dim = cfg.ctenc_LPCAEnc.dim_ct
         self.emb_dim = emb_dim
         self.pass_as_var = cfg.ctenc_LPCAEnc.pass_as_var if hasattr(cfg.ctenc_LPCAEnc, "pass_as_var") else False
-        self.concat_x = cfg.ctenc_LPCAEnc.concat_x if hasattr(cfg.ctenc_LPCAEnc, "concat_x") else True
+        self.dim_in = cfg.ctenc_LPCAEnc.dim_in if hasattr(cfg.ctenc_LPCAEnc, "dim_in") else 0
+
+        if expand_x and self.emb_dim - self.enc_dim > 0:
+            self.linear_x = nn.Linear(self.dim_in, self.emb_dim - self.enc_dim)
 
 
     def forward(self, batch):
         lpca_enc = getattr(batch, 'lpca_enc')
 
+        if self.expand_x:
+            h = self.linear_x(batch.x)
+        else:
+            h = batch.x
+
         if self.enc_dim > 0:
-            if self.concat_x:
-                batch.x = torch.cat((batch.x, lpca_enc), 1)
-            else:
-                batch.x = lpca_enc
+            batch.x = torch.cat((h, lpca_enc), 1)
             assert batch.x.shape[1] == self.emb_dim
 
         if self.pass_as_var:
