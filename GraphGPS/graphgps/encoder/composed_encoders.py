@@ -231,6 +231,27 @@ def add_WLfembed_to_encoders(encoder_classes, pe_enc_names):
     return WLf_sum_encoder
 
 
+def expand_x_encoder(encoder_class):
+
+
+    class Expanded_x(torch.nn.Module):
+
+        encoder = None
+
+
+        def __init__(self, dim_emb):
+            super().__init__()
+            self.encoder_expanded_x = self.encoder(dim_emb, expand_x=True)
+    
+
+        def forward(self, batch):
+            return self.encoder_expanded_x(batch)
+
+    Expanded_x.encoder = encoder_class
+
+    return Expanded_x
+
+
 # Dataset-specific node encoders.
 ds_encs = {
     "Atom": AtomEncoder,
@@ -331,7 +352,7 @@ register_node_encoder(
 # Exapnd_x LPCA encoder
 register_node_encoder(
     f"LPCAEnc-e",
-    LPCAEncoder(expand_x=True)
+    expand_x_encoder(LPCAEncoder)
 )
 
 # WLtree sum encoders:
