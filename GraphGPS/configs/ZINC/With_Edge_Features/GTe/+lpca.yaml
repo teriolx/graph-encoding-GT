@@ -18,13 +18,9 @@ dataset:
   node_encoder_bn: False
   edge_encoder: False
 ctenc_LPCAEnc:
-  kernel: True
-  model: mlp_flat
-  dim_pe: 28
   dim_ct: 20
   raw_norm_type: BatchNorm
   layers: 2
-  norm: "batch_norm"
 train:
   mode: custom
   batch_size: 32
