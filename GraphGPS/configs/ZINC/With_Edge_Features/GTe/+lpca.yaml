@@ -21,6 +21,7 @@ ctenc_LPCAEnc:
   dim_ct: 20
   raw_norm_type: BatchNorm
   layers: 2
+  norm: "batch_norm"
 train:
   mode: custom
   batch_size: 32
