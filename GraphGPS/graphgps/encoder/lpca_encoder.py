@@ -2,25 +2,46 @@ import torch
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.register import (register_node_encoder)
 from torch import nn
+from torch_geometric.nn.models import MLP
 
 
 @register_node_encoder('LPCAEnc')
 class LPCAEncoder(torch.nn.Module):
     def __init__(self, emb_dim, expand_x=False):
         super().__init__()
-
-        self.enc_dim = cfg.ctenc_LPCAEnc.dim_ct
+        
+        enc_cfg = cfg.ctenc_LPCAEnc
+        self.enc_dim = enc_cfg.dim_ct
         self.emb_dim = emb_dim
-        self.pass_as_var = cfg.ctenc_LPCAEnc.pass_as_var if hasattr(cfg.ctenc_LPCAEnc, "pass_as_var") else False
-        self.dim_in = cfg.ctenc_LPCAEnc.dim_in if hasattr(cfg.ctenc_LPCAEnc, "dim_in") else 0
+        self.pass_as_var = enc_cfg.pass_as_var if hasattr(enc_cfg, "pass_as_var") else False
+        self.dim_in = enc_cfg.dim_in if hasattr(enc_cfg, "dim_in") else 0
 
         self.expand_x = expand_x and self.emb_dim - self.enc_dim > 0
         if self.expand_x:
             self.linear_x = nn.Linear(self.dim_in, self.emb_dim - self.enc_dim)
-        
 
+        # sanity check with RWSE
+        if hasattr(enc_cfg, "kernel"):
+            dim_pe = enc_cfg.dim_pe  # Size of the kernel-based PE embedding
+            num_rw_steps = enc_cfg.dim_ct 
+            n_layers = enc_cfg.layers  # Num. layers in PE encoder model
+            norm_type = enc_cfg.raw_norm_type.lower()  # Raw PE normalization layer type
+
+            if norm_type == 'batchnorm':
+                self.raw_norm = nn.BatchNorm1d(num_rw_steps)
+            else:
+                self.raw_norm = None
+
+            activation = nn.ReLU  # register.act_dict[cfg.gnn.act]
+            self.pe_encoder = MLP(in_channels=num_rw_steps, hidden_channels=dim_pe, out_channels=dim_pe, num_layers=n_layers, norm=enc_cfg.norm)
+
+        
     def forward(self, batch):
         lpca_enc = getattr(batch, 'lpca_enc')
+
+        if self.raw_norm:
+            lpca_enc = self.raw_norm(lpca_enc)
+        lpca_enc = self.pe_encoder(lpca_enc) 
 
         if self.expand_x:
             h = self.linear_x(batch.x)
