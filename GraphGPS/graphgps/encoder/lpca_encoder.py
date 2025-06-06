@@ -21,19 +21,19 @@ class LPCAEncoder(torch.nn.Module):
             self.linear_x = nn.Linear(self.dim_in, self.emb_dim - self.enc_dim)
 
         # sanity check with RWSE
-        if hasattr(enc_cfg, "kernel"):
-            dim_pe = enc_cfg.dim_pe  # Size of the kernel-based PE embedding
-            num_rw_steps = enc_cfg.dim_ct 
-            n_layers = enc_cfg.layers  # Num. layers in PE encoder model
-            norm_type = enc_cfg.raw_norm_type.lower()  # Raw PE normalization layer type
+        n_layers = enc_cfg.layers  # Num. layers in PE encoder model
+        norm_type = enc_cfg.raw_norm_type.lower()  # Raw PE normalization layer type
 
-            if norm_type == 'batchnorm':
-                self.raw_norm = nn.BatchNorm1d(num_rw_steps)
-            else:
-                self.raw_norm = None
+        if norm_type == 'batchnorm':
+            self.raw_norm = nn.BatchNorm1d(enc_cfg.dim_ct)
+        else:
+            self.raw_norm = None
 
-            activation = nn.ReLU  # register.act_dict[cfg.gnn.act]
-            self.pe_encoder = MLP(in_channels=num_rw_steps, hidden_channels=dim_pe, out_channels=dim_pe, num_layers=n_layers, norm=enc_cfg.norm)
+        self.pe_encoder = MLP(in_channels=enc_cfg.dim_ct, 
+                              hidden_channels=enc_cfg.dim_ct, 
+                              out_channels=enc_cfg.dim_ct,
+                              num_layers=n_layers, 
+                              norm=enc_cfg.norm)
 
         
     def forward(self, batch):
