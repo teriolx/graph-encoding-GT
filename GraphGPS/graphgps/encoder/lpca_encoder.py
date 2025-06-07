@@ -33,8 +33,9 @@ class LPCAEncoder(torch.nn.Module):
                               hidden_channels=enc_cfg.dim_ct, 
                               out_channels=enc_cfg.dim_ct,
                               num_layers=n_layers, 
-                              norm=enc_cfg.norm,
-                              act=enc_cfg.activation)
+                              norm=enc_cfg.norm if enc_cfg.norm != "None" else None,
+                              act=enc_cfg.activation,
+                              act_first=enc_cfg.act_first)
 
         
     def forward(self, batch):
