@@ -28,12 +28,13 @@ class LPCAEncoder(torch.nn.Module):
             self.raw_norm = nn.BatchNorm1d(enc_cfg.dim_ct)
         else:
             self.raw_norm = None
-
+        
         self.pe_encoder = MLP(in_channels=enc_cfg.dim_ct, 
                               hidden_channels=enc_cfg.dim_ct, 
                               out_channels=enc_cfg.dim_ct,
                               num_layers=n_layers, 
-                              norm=enc_cfg.norm)
+                              norm=enc_cfg.norm,
+                              act=enc_cfg.activation)
 
         
     def forward(self, batch):
