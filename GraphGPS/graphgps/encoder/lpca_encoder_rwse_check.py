@@ -5,8 +5,8 @@ from torch import nn
 from torch_geometric.nn.models import MLP
 
 
-@register_node_encoder('LPCAEnc')
-class LPCAEncoder(torch.nn.Module):
+@register_node_encoder('LPCAEncDebugRWSE')
+class LPCAEncoderDebug(torch.nn.Module):
     def __init__(self, emb_dim, expand_x=False):
         super().__init__()
         
