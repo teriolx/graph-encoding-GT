@@ -2,6 +2,7 @@ import torch
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.register import (register_node_encoder)
 from torch import nn
+from torch_geometric.nn.models import MLP
 
 
 @register_node_encoder('LPCAEnc')
@@ -19,11 +20,33 @@ class LPCAEncoder(torch.nn.Module):
         if self.expand_x:
             self.linear_x = nn.Linear(self.dim_in, self.emb_dim - self.enc_dim)
 
-        print("expand_x", self.expand_x)
+        # sanity check with RWSE
+        if hasattr(enc_cfg, "layers"):
+            self.is_mlp = True
+            n_layers = enc_cfg.layers  # Num. layers in PE encoder model
+            norm_type = enc_cfg.raw_norm_type.lower()  # Raw PE normalization layer type
+
+            if norm_type == 'batchnorm':
+                self.raw_norm = nn.BatchNorm1d(enc_cfg.dim_ct)
+            else:
+                self.raw_norm = None
+            
+            self.pe_encoder = MLP(in_channels=enc_cfg.dim_ct, 
+                                hidden_channels=enc_cfg.dim_ct, 
+                                out_channels=enc_cfg.dim_ct,
+                                num_layers=n_layers, 
+                                norm=enc_cfg.norm if enc_cfg.norm != "None" else None,
+                                act=enc_cfg.activation,
+                                act_first=enc_cfg.act_first)
 
         
     def forward(self, batch):
         lpca_enc = getattr(batch, 'lpca_enc')
+
+        if self.is_mlp:
+            if self.raw_norm:
+                lpca_enc = self.raw_norm(lpca_enc)
+            lpca_enc = self.pe_encoder(lpca_enc) 
 
         if self.expand_x:
             h = self.linear_x(batch.x)
