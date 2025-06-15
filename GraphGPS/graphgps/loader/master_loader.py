@@ -630,6 +630,7 @@ def preformat_Peptides(dataset_dir, name): #FLAGpep
 
     if hom_type != None and hom_type == "LPCA":
         dataset = get_data.add_lpca(os.environ["Peptides_LPCA_DATA_DIR"], dataset=dataset)
+        return dataset
 
     if hom_type != None:
         data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','peptides', 'data')

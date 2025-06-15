@@ -7,7 +7,7 @@ wandb:
   entity: YOUR_ENTITY_HERE
 dataset:
   format: OGB
-  name: peptides-functional-spasm
+  name: peptides-functional-LPCA
   task: graph
   task_type: classification_multilabel
   transductive: False
