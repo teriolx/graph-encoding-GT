@@ -4,6 +4,7 @@ from torch_geometric.graphgym.config import cfg
 # from torch_geometric.graphgym.models.gnn import FeatureEncoder
 from graphgps.network.feature_encoder import FeatureEncoder
 from torch_geometric.graphgym.register import register_network
+from torch import nn
 
 from graphgps.layer.SAedge_layer import SAEdgeLayer
 
@@ -46,6 +47,12 @@ class SAEdgeTransformer(torch.nn.Module):
 
         GNNHead = register.head_dict[cfg.gnn.head]
         self.post_mp = GNNHead(dim_in=cfg.gnn.dim_inner, dim_out=dim_out)
+        self.norm_layers = []
+        if cfg.gt.norm_layers:
+            self.norm_layers = nn.ModuleList([nn.LayerNorm(dim_out) for _ in range(len(self.trf_layers))])
+        self.norm = None
+        if cfg.gt.post_norm:
+            self.post_norm = nn.LayerNorm(dim_out)
 
     def forward(self, batch):
 
@@ -58,8 +65,12 @@ class SAEdgeTransformer(torch.nn.Module):
         edge_dest = edge_index_total[1]
 
         batch = self.encoder(batch)
-        for layer in self.trf_layers:
+        for i, layer in enumerate(self.trf_layers):
             batch = layer(batch, fake_edge_index, fake_edge_attr, edge_src, edge_dest)
+            if self.norm_layers:
+                batch = self.norm_layers[i](batch)
+        if self.post_norm is not None:
+            batch = self.post_norm(batch)
         batch = self.post_mp(batch)
 
         return batch
