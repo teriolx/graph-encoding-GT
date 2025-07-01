@@ -50,7 +50,7 @@ class SAEdgeTransformer(torch.nn.Module):
         self.norm_layers = []
         if cfg.gt.norm_layers:
             self.norm_layers = nn.ModuleList([nn.LayerNorm(dim_out) for _ in range(len(self.trf_layers))])
-        self.norm = None
+        self.post_norm = None
         if cfg.gt.post_norm:
             self.post_norm = nn.LayerNorm(dim_out)
 
@@ -68,9 +68,9 @@ class SAEdgeTransformer(torch.nn.Module):
         for i, layer in enumerate(self.trf_layers):
             batch = layer(batch, fake_edge_index, fake_edge_attr, edge_src, edge_dest)
             if self.norm_layers:
-                batch = self.norm_layers[i](batch)
+                batch.x = self.norm_layers[i](batch.x)
         if self.post_norm is not None:
-            batch = self.post_norm(batch)
+            batch = self.post_norm(batch.x)
         batch = self.post_mp(batch)
 
         return batch
