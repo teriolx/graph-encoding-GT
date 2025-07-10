@@ -82,8 +82,8 @@ class SAEdgeLayer(nn.Module):
     """MultiHeadAttentionEdgeLayer with feed forward as regularizers"""
 
     def __init__(self, in_dim, out_dim, num_heads, n_edge_types, dropout=0.0,
-                 layer_norm=False, batch_norm=True, down_proj=None,
-                 residual=True, use_bias=False):
+                 layer_norm=False, batch_norm=True, extra_norm=False,
+                 down_proj=None, residual=True, use_bias=False):
         super().__init__()
 
         self.in_channels = in_dim
@@ -94,6 +94,7 @@ class SAEdgeLayer(nn.Module):
         self.residual = residual
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm
+        self.extra_norm = extra_norm
         self.attention = MultiHeadAttentionEdgeLayer(in_dim=in_dim,
                                                     out_dim=out_dim // num_heads,
                                                     num_heads=num_heads,
@@ -122,6 +123,15 @@ class SAEdgeLayer(nn.Module):
         if self.down_proj != None:
             self.ff_down = nn.Linear(self.down_proj['dim_initial'], self.down_proj['dim_hidden'])
 
+        if self.extra_norm:
+            if self.batch_norm:
+                self.batch_norm3_h = nn.BatchNorm1d(out_dim) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])
+                self.batch_norm4_h = nn.BatchNorm1d(out_dim) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])  
+            else:
+                self.layer_norm3_h = nn.LayerNorm(out_dim) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
+                self.layer_norm4_h = nn.LayerNorm(out_dim) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
+
+
     def forward(self, batch, fake_edge_index, fake_edge_attr, edge_src, edge_dest):
         h = batch.x
         h_in1 = h  # for first residual connection
@@ -133,6 +143,12 @@ class SAEdgeLayer(nn.Module):
         h = h_attn_out.view(-1, self.out_channels)
 
         h = F.dropout(h, self.dropout, training=self.training)
+
+        if self.extra_norm:
+            if self.layer_norm:
+                h = self.layer_norm3_h(h)
+            if self.batch_norm:
+                h = self.batch_norm3_h(h)
 
         h = self.O_h(h)
 
@@ -151,6 +167,13 @@ class SAEdgeLayer(nn.Module):
         h = self.FFN_h_layer1(h)
         h = F.relu(h)
         h = F.dropout(h, self.dropout, training=self.training)
+
+        if self.extra_norm:
+            if self.layer_norm:
+                h = self.layer_norm4_h(h)
+            if self.batch_norm:
+                h = self.batch_norm4_h(h)
+
         h = self.FFN_h_layer2(h)
 
         if self.residual:

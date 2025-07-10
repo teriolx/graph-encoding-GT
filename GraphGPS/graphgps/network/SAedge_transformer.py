@@ -41,6 +41,7 @@ class SAEdgeTransformer(torch.nn.Module):
                                     dropout=cfg.gt.dropout,
                                     layer_norm=cfg.gt.layer_norm,
                                     batch_norm=cfg.gt.batch_norm,
+                                    extra_norm=cfg.gt.extra_norm,
                                     down_proj={'dim_initial': cfg.gt.dim_initial, "dim_hidden": cfg.gt.dim_hidden} if cfg.gt.varied_width and i==cfg.gt.initial_depth-1 else None,
                                     residual=cfg.gt.residual))
         self.trf_layers = torch.nn.ModuleList(layers)
