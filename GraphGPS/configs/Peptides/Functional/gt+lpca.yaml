@@ -20,6 +20,7 @@ dataset:
   edge_encoder_bn: False
 ctenc_LPCAEnc:
   dim_ct: 16
+  gamma: 0.0
 train:
   mode: custom
   batch_size: 128
@@ -38,6 +39,7 @@ gt:
   attn_dropout: 0.5
   layer_norm: False
   batch_norm: True
+  extra_norm: False
 gnn:
   head: default
   layers_pre_mp: 0
