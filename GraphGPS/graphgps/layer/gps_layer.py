@@ -21,7 +21,8 @@ class GPSLayer(nn.Module):
                  local_gnn_type, global_model_type, num_heads, act='relu',
                  pna_degrees=None, equivstable_pe=False, dropout=0.0,
                  attn_dropout=0.0, layer_norm=False, batch_norm=True,
-                 bigbird_cfg=None, log_attn_weights=False, n_edge_types=None, down_proj=None, initial_edge_dim=None, ff=True):
+                 bigbird_cfg=None, log_attn_weights=False, n_edge_types=None, down_proj=None, initial_edge_dim=None, ff=True,
+                 extra_norm=False):
         super().__init__()
 
         self.dim_h = dim_h
@@ -35,6 +36,7 @@ class GPSLayer(nn.Module):
         self.down_proj = down_proj
         self.initial_edge_dim=initial_edge_dim
         self.ff = ff
+        self.extra_norm = extra_norm
 
         self.log_attn_weights = log_attn_weights
         if log_attn_weights and global_model_type not in ['Transformer',
@@ -167,6 +169,14 @@ class GPSLayer(nn.Module):
             if self.down_proj != None:
                 self.ff_down = nn.Linear(self.down_proj['dim_initial'], self.down_proj['dim_hidden'])
 
+            if self.extra_norm:
+                if self.batch_norm:
+                    self.batch_norm3_h = nn.BatchNorm1d(dim_h) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])
+                    self.batch_norm4_h = nn.BatchNorm1d(dim_h) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])  
+                else:
+                    self.layer_norm3_h = pygnn.norm.LayerNorm(dim_h) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
+                    self.layer_norm4_h = pygnn.norm.LayerNorm(dim_h) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
+
     def forward(self, batch):
         h = batch.x
         h_in1 = h  # for first residual connection
@@ -201,6 +211,11 @@ class GPSLayer(nn.Module):
                 else:
                     h_local = self.local_model(h, batch.edge_index)
                 h_local = self.dropout_local(h_local)
+                if self.extra_norm:
+                    if self.layer_norm:
+                        h_local = self.layer_norm3_h(h_local, batch.batch)
+                    if self.batch_norm:
+                        h_local = self.batch_norm3_h(h_local)
                 h_local = h_in1 + h_local  # Residual connection.
 
             if self.layer_norm:
@@ -225,6 +240,11 @@ class GPSLayer(nn.Module):
                 raise RuntimeError(f"Unexpected {self.global_model_type}")
 
             h_attn = self.dropout_attn(h_attn)
+            if self.extra_norm:
+                if self.layer_norm:
+                    h_attn = self.layer_norm3_h(h_attn, batch.batch)
+                if self.batch_norm:
+                    h_attn = self.batch_norm3_h(h_attn)
             h_attn = h_in1 + h_attn  # Residual connection.
             if self.layer_norm:
                 h_attn = self.norm1_attn(h_attn, batch.batch)

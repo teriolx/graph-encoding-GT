@@ -66,6 +66,7 @@ class GPSModel(torch.nn.Module):
                 initial_edge_dim=cfg.gt.dim_initial if cfg.gt.varied_width else None, #for down-projecting initial edge embeddings when using GINE with varied width
                 n_edge_types = cfg.gnn.n_edge_types if hasattr(cfg.gnn, "n_edge_types") and not cfg.dataset.edge_encoder else None, #no need to embed edges types when using RGCN
                 ff = cfg.gt.ff if hasattr(cfg.gt, "ff") else True,
+                extra_norm=cfg.gt.extra_norm
             ))
         self.layers = torch.nn.Sequential(*layers)
 
