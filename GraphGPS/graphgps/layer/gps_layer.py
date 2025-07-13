@@ -211,17 +211,17 @@ class GPSLayer(nn.Module):
                 else:
                     h_local = self.local_model(h, batch.edge_index)
                 h_local = self.dropout_local(h_local)
-                if self.extra_norm:
-                    if self.layer_norm:
-                        h_local = self.layer_norm3_h(h_local, batch.batch)
-                    if self.batch_norm:
-                        h_local = self.batch_norm3_h(h_local)
                 h_local = h_in1 + h_local  # Residual connection.
 
             if self.layer_norm:
                 h_local = self.norm1_local(h_local, batch.batch)
             if self.batch_norm:
                 h_local = self.norm1_local(h_local)
+            if self.extra_norm:
+                if self.layer_norm:
+                    h_local = self.layer_norm3_h(h_local, batch.batch)
+                if self.batch_norm:
+                        h_local = self.batch_norm3_h(h_local)
             h_out_list.append(h_local)
 
         # Multi-head attention.
@@ -240,16 +240,17 @@ class GPSLayer(nn.Module):
                 raise RuntimeError(f"Unexpected {self.global_model_type}")
 
             h_attn = self.dropout_attn(h_attn)
-            if self.extra_norm:
-                if self.layer_norm:
-                    h_attn = self.layer_norm3_h(h_attn, batch.batch)
-                if self.batch_norm:
-                    h_attn = self.batch_norm3_h(h_attn)
             h_attn = h_in1 + h_attn  # Residual connection.
             if self.layer_norm:
                 h_attn = self.norm1_attn(h_attn, batch.batch)
             if self.batch_norm:
                 h_attn = self.norm1_attn(h_attn)
+
+            if self.extra_norm:
+                if self.layer_norm:
+                    h_attn = self.layer_norm3_h(h_attn, batch.batch)
+                if self.batch_norm:
+                    h_attn = self.batch_norm3_h(h_attn)
             h_out_list.append(h_attn)
 
         # Combine local and global outputs.
