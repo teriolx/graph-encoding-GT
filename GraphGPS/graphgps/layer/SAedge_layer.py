@@ -144,11 +144,7 @@ class SAEdgeLayer(nn.Module):
 
         h = F.dropout(h, self.dropout, training=self.training)
 
-        if self.extra_norm:
-            if self.layer_norm:
-                h = self.layer_norm3_h(h)
-            if self.batch_norm:
-                h = self.batch_norm3_h(h)
+       
 
         h = self.O_h(h)
 
@@ -161,18 +157,18 @@ class SAEdgeLayer(nn.Module):
         if self.batch_norm:
             h = self.batch_norm1_h(h)
 
+        if self.extra_norm:
+            if self.layer_norm:
+                h = self.layer_norm3_h(h)
+            if self.batch_norm:
+                h = self.batch_norm3_h(h)
+
         h_in2 = h  # for second residual connection
 
         # FFN for h
         h = self.FFN_h_layer1(h)
         h = F.relu(h)
         h = F.dropout(h, self.dropout, training=self.training)
-
-        if self.extra_norm:
-            if self.layer_norm:
-                h = self.layer_norm4_h(h)
-            if self.batch_norm:
-                h = self.batch_norm4_h(h)
 
         h = self.FFN_h_layer2(h)
 
@@ -187,6 +183,12 @@ class SAEdgeLayer(nn.Module):
 
         if self.batch_norm:
             h = self.batch_norm2_h(h)
+
+        if self.extra_norm:
+            if self.layer_norm:
+                h = self.layer_norm4_h(h)
+            if self.batch_norm:
+                h = self.batch_norm4_h(h)
 
         batch.x = h
         return batch
