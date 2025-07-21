@@ -126,10 +126,10 @@ class SAEdgeLayer(nn.Module):
         if self.extra_norm:
             if self.batch_norm:
                 self.batch_norm3_h = nn.BatchNorm1d(out_dim) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])
-                self.batch_norm4_h = nn.BatchNorm1d(2*out_dim) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])  
+                self.batch_norm4_h = nn.BatchNorm1d(out_dim) if self.down_proj == None else nn.BatchNorm1d(self.down_proj['dim_hidden'])  
             else:
                 self.layer_norm3_h = nn.LayerNorm(out_dim) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
-                self.layer_norm4_h = nn.LayerNorm(2*out_dim) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
+                self.layer_norm4_h = nn.LayerNorm(out_dim) if self.down_proj == None else nn.LayerNorm(self.down_proj['dim_hidden'])
 
 
     def forward(self, batch, fake_edge_index, fake_edge_attr, edge_src, edge_dest):
